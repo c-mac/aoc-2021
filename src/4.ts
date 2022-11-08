@@ -2,11 +2,16 @@ export default class Four {
     numbers: number[];
     boards: number[][][];
     markedBoards: number[][][];
+    completedBoards: {
+        boardIndex: number;
+        score: number;
+    }[];
 
     constructor(numbers: number[], boards: number[][][]) {
         this.numbers = numbers;
         this.boards = boards;
         this.markedBoards = this.boards.map(board => board.map(row => row.map(_ => 0)));
+        this.completedBoards = [];
     }
 
 
@@ -52,7 +57,7 @@ export default class Four {
         return sum * lastNum;
     }
 
-    run() {
+    runOne() {
         for (let number of this.numbers) {
             for (let i = 0; i < this.boards.length; i++) {
                 const score = this.updateBoard(this.boards[i], number, i);
@@ -61,6 +66,23 @@ export default class Four {
                 }
             }
         }
+    }
+
+    runTwo() {
+        for (let number of this.numbers) {
+            for (let i = 0; i < this.boards.length; i++) {
+                if (!this.completedBoards.find(x => x.boardIndex === i)) {
+                    const score = this.updateBoard(this.boards[i], number, i);
+                    if (score) {
+                        this.completedBoards.push({
+                            boardIndex: i,
+                            score: score
+                        });
+                    }
+                }
+            }
+        }
+        return this.completedBoards.reverse()[0].score;     
     }
 }
 
@@ -666,4 +688,4 @@ const boards = [
         [79, 99,  9, 89, 10],
         [6,  5, 33, 92, 72]],
     ];
-console.log(new Four(numbers, boards).run());
+console.log(new Four(numbers, boards).runTwo());
